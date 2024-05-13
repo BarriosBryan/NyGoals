@@ -1,42 +1,62 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, FlatList } from 'react-native';
+import { useState } from 'react'
+import { Button, StyleSheet, Text, TextInput, View, ScrollView, FlatList } from 'react-native';
+import GoalItem from './components/GoalItem';
+import GoalInput from './components/GoalInput';
 
 export default function App() {
-  const [enteredGoalText, setEnteredGoalText] = useState('');
-  const [goals, setGoals] = useState([]);
+  const [goals, setGoals] = useState([])
 
-  function handleInputGoal(enteredText) {
-    console.log(enteredText);
-    setEnteredGoalText(enteredText);
+
+  function handleAddGoal(enteredGoalText) {
+    // console.log(enteredGoalText)
+    // console.log('Hello You')
+    setGoals(() => [...goals, {text: enteredGoalText, key: Math.random().toString()}])
+    console.log('goals', goals)
+    console.log('handleAddGoal')
   }
 
-  function handleAddGoal() {
-    console.log(enteredGoalText);
-    setGoals([...goals, { text: enteredGoalText, key: Math.random().toString() }]);
+  function handleDeleteGoal(id){
+    console.log('DELETE')
+    const deleteGoal = goals.filter((goal) => {return goal.key !== id} )
+    setGoals(deleteGoal)
   }
 
+  
   return (
     <View style={styles.container}>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.textinput}
-          placeholder="Your Goal!"
+      {/* <View style={styles.inputContainer}>
+        <TextInput 
+          style={styles.textInput} 
+          placeholder='Your Goal!'
           onChangeText={handleInputGoal}
         />
-        <Button
-          title="Add Goal"
-          color="#A3FFD6"
+        <Button 
+          title="Add Goal" 
+          color={'#A3FFD6'}
           onPress={handleAddGoal}
         />
-      </View>
+      </View> */}
+      <GoalInput
+        onAddGoal={handleAddGoal}
+      />
       <View style={styles.goalsContainer}>
         <FlatList
           data={goals}
-          renderItem={({ item }) => (
-            <View style={styles.goalsItem}>
-              <Text style={styles.goalText}>{item.text}</Text>
-            </View>
-          )}
+          renderItem={ (itemData) => {
+            return(
+              // <View style={styles.goalsItem} >
+              //   <Text style={styles.goalText}>{itemData.item.text}</Text>
+              // </View>
+              <GoalItem 
+                itemData={itemData}
+                onDeleteItem={handleDeleteGoal} 
+                id={itemData.item.key}
+              />
+            )
+          }}
+          keyExtractor={(item) => {
+            return item.id
+          }}
         />
       </View>
     </View>
@@ -50,29 +70,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   inputContainer: {
+    flex: 1,
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#7BC9FF',
+    borderBottomColor: '#7BC9FF'
   },
-  textinput: {
+  btnGoal:{
+    borderRadius: 20,
+    backgroundColor: '#cccccc'
+  },
+  textInput: {
     borderWidth: 1,
-    borderColor: '#CCCCCC',
+    borderColor: '#cccccc',
     width: '80%',
     marginRight: 3,
     padding: 8,
-    borderRadius: 5,
+    borderRadius: 5
   },
-  goalsItem: { 
-    margin: 0,
-    padding: 0,
-    borderRadius: 6,
-    backgroundColor: '#8576FF',
-    color: 'white',
-  },
-  goalText: {
-    color: 'white',
+  goalsContainer: {
+    flex: 5
   },
 });
